@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.cloudimpl</groupId>
+        <artifactId>xbe</artifactId>
+        <version>2.0.0</version>
+    </parent>
+    <artifactId>codegen4j</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>codegen-lib</module>
+        <module>code-generator</module>
+    </modules>
+    <properties>
+        <cloudImpl.errorCode.enable>false</cloudImpl.errorCode.enable>
+        <cloudImpl.errorCode.package>com.cloudimpl.codegen4j.xbe.error</cloudImpl.errorCode.package>
+        <cloudImpl.errorCode.errorFileName>CodeGen4J</cloudImpl.errorCode.errorFileName>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>net.openhft</groupId>
+            <artifactId>compiler</artifactId>
+            <version>2.3.5</version>
+        </dependency>
+    </dependencies>
+</project>
