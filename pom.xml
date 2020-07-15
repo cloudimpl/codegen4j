@@ -14,6 +14,13 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/cloudimpl/codegen4j</url>
+    </repository>
+    </distributionManagement>
     <dependencies>
         <dependency>
             <groupId>net.openhft</groupId>
