@@ -25,12 +25,14 @@ jobs:
         
         
     - name: Extract CODEGEN_VERSION
-        if:success()
-          run:export VERSION=`cat pom.xml | grep "<version>" | head -n 1 |  awk -F'>' '{print $2}' | awk -F'<' '{print $1}'` && echo "::set-env name=CODEGEN_VERSION::${VERSION}.${GITHUB_RUN_NUMBER}"
-          run:echo $CODEGEN_VERSION
+      if: success()
+      run: |
+        export VERSION=`cat pom.xml | grep "<version>" | head -n 1 |  awk -F'>' '{print $2}' | awk -F'<' '{print $1}'` && echo "::set-env name=CODEGEN_VERSION::${VERSION}.${GITHUB_RUN_NUMBER}"
+        echo $CODEGEN_VERSION
+        
     - name: Set ustack build number
-        if:success()
-          run:mvn versions:set versions:commit -DnewVersion="${CODEGEN_VERSION}"
+      if: success()
+      run: mvn versions:set versions:commit -DnewVersion="${CODEGEN_VERSION}"
           
     - name: Build with Maven
       run: |
