@@ -30,7 +30,8 @@ jobs:
     - name: Extract CODEGEN_VERSION
       if: success()
       run: |
-        export VERSION=`cat pom.xml | grep "<version>" | head -n 1 |  awk -F'>' '{print $2}' | awk -F'<' '{print $1}'` && echo "::set-env name=CODEGEN_VERSION::${VERSION}.${GITHUB_RUN_NUMBER}"
+        export VERSION=`cat pom.xml | grep "<version>" | head -n 1 |  awk -F'>' '{print $2}' | awk -F'<' '{print $1}'`
+        export CODEGEN_VERSION=${VERSION}.${GITHUB_RUN_NUMBER}
         echo $CODEGEN_VERSION
         
     - name: Set codegen build number
