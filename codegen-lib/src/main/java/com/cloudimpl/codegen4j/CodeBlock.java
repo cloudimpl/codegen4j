@@ -94,7 +94,7 @@ public abstract class CodeBlock {
             if(arg0.getClass() == ClassBlock.class || arg0.getClass() == EnumBlock.class)
                 return 1;
             else
-                return -1;
+                return 0;
         });
         int temp2 = tabIndex;
         codeBlocks.forEach(cb -> {
