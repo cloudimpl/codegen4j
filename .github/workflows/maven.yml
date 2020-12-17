@@ -33,6 +33,7 @@ jobs:
         export VERSION=`cat pom.xml | grep "<version>" | head -n 1 |  awk -F'>' '{print $2}' | awk -F'<' '{print $1}'`
         export CODEGEN_VERSION=${VERSION}.${GITHUB_RUN_NUMBER}
         echo $CODEGEN_VERSION
+        echo "CODEGEN_VERSION=${CODEGEN_VERSION}" > ${GITHUB_ENV}
         
     - name: Set codegen build number
       if: success()
