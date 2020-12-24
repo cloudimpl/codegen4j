@@ -104,7 +104,7 @@ public class CodeGenerator extends AbstractMojo {
                 project.getArtifacts()
                         .stream()
                         .map(s -> {
-                            System.out.println("xxxx : " + s.getFile().getAbsolutePath());
+                        //    System.out.println("xxxx : " + s.getFile().getAbsolutePath());
                             return s.getFile().getAbsolutePath();
                         }).forEach(p -> {
                     providers.values().forEach(prv -> prv.addDependacyPath(p, false));

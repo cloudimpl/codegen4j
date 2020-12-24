@@ -6,11 +6,15 @@
 package com.cloudimpl.codegen4j.spi;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +27,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -137,12 +142,27 @@ public abstract class MavenCodeGenSpi {
         compileFiles(Arrays.asList(files));
     }
     
+    protected List<String> getAllSourceFiles()
+    {
+        try (Stream<Path> walk = Files.walk(Paths.get(getProject().getSourceDir()))) {
+            // We want to find only regular files
+            List<String> result = walk.filter(Files::isRegularFile)
+                    .map(x -> x.toString()).filter(s->s.endsWith(".java")).collect(Collectors.toList());
+
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     protected void compileFiles(List<File> javaFiles) {
         if (javaFiles.isEmpty()) {
             return;
         }
+        if(classPath.isEmpty())
+            classPath = Optional.of(runtimeClasspathElements.stream().collect(Collectors.joining(":")));
         // File[] javaFiles = new File[]{new File(javaFile.getAbsolutePath())};
-        log("compiling files: " + javaFiles.stream().map(f -> f.getAbsolutePath()).collect(Collectors.toList()));
+        //log("compiling files: " + javaFiles.stream().map(f -> f.getAbsolutePath()).collect(Collectors.toList()));
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
@@ -155,6 +175,8 @@ public abstract class MavenCodeGenSpi {
         if (classPath.isPresent()) {
             optionList.addAll(Arrays.asList("-classpath", classPath.get()));
         }
+      //  optionList.addAll(Arrays.asList("-classpath",System.getProperty("java.class.path")));
+
         File targetDir = new File(project.getBuildTargetDir());
         targetDir.mkdir();
         optionList.addAll(Arrays.asList("-d", project.getBuildTargetDir()));
@@ -218,6 +240,10 @@ public abstract class MavenCodeGenSpi {
             return buildTargetDir;
         }
 
+        public String getSourceDir()
+        {
+            return baseDir+"/src/main/java";
+        }
         @Override
         public String toString() {
             return "Project{" + "baseDir=" + baseDir + ", buildDir=" + buildDir + ", buildTargetDir=" + buildTargetDir + '}';

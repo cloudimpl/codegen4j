@@ -6,9 +6,12 @@
 package com.cloudimpl.codegen4j;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -17,7 +20,7 @@ import java.util.List;
 public class ClassBlock extends PermissionBlock {
 
     private String packageName;
-    private List<String> imports = new LinkedList<>();
+    private Set<String> imports = new HashSet<>();
     protected String className = null;
     private String extend = null;
     protected List<String> implementList;
@@ -46,13 +49,13 @@ public class ClassBlock extends PermissionBlock {
         return packageName;
     }
 
-    public List<String> getImports() {
+    public Collection<String> getImports() {
         return imports;
     }
 
     
     public ClassBlock withImports(String... imports) {
-        Arrays.asList(imports).forEach(imp -> this.imports.add(imp));
+        Arrays.asList(imports).stream().filter(p->!p.substring(0,p.lastIndexOf(".")).equals("java.lang")).forEach(imp -> this.imports.add(imp));
         return this;
     }
     
