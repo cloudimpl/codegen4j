@@ -18,7 +18,7 @@ public abstract class CodeBlock {
     private List<Statement> stmts = new LinkedList<>();
     private List<CodeBlock> codeBlocks = new LinkedList<>();
     private List<String> annotations = new LinkedList<>();
-
+    private boolean disableBlockSpace = false;
     public CodeBlock() {
     }
 
@@ -35,6 +35,11 @@ public abstract class CodeBlock {
         return this.stmts.stream().filter(st->st instanceof EnumStatement).findAny().orElse(null) != null;
     }
     
+    protected final void disableBlockSpace()
+    {
+        this.disableBlockSpace = true;
+    }
+    
     public <T extends CodeBlock> T withAnnotation(String annotation) {
         this.annotations.add("@" + annotation);
         return (T) this;
@@ -44,11 +49,17 @@ public abstract class CodeBlock {
         return new Statement(this);
     }
 
+    public SwitchBlock createSwitch(String switchName)
+    {
+        return pushBlock(new SwitchBlock(switchName));
+    }
+    
     protected <T> T pushBlock(CodeBlock block) {
         this.codeBlocks.add(block);
         return (T) block;
     }
 
+    
     public Var var(String type, String var) {
         return new Var(this, type, var);
     }
@@ -98,7 +109,8 @@ public abstract class CodeBlock {
         });
         int temp2 = tabIndex;
         codeBlocks.forEach(cb -> {
-            builder.append("\r\n");
+            if(!disableBlockSpace)
+                builder.append("\r\n");
             cb.generateCode(temp2, builder);
        //     builder.append("\r\n");
         });
