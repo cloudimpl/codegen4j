@@ -8,4 +8,11 @@
     </parent>
     <artifactId>codegen-lib</artifactId>
     <packaging>jar</packaging>
+    <dependencies>
+         <dependency>
+            <groupId>net.openhft</groupId>
+            <artifactId>zero-allocation-hashing</artifactId>
+            <version>0.11</version>
+        </dependency>
+    </dependencies>
 </project>
