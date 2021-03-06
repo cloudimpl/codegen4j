@@ -9,9 +9,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import net.openhft.hashing.LongHashFunction;
 
 /**
  *
@@ -20,27 +20,33 @@ import java.util.Set;
 public class ClassBlock extends PermissionBlock {
 
     private String packageName;
-    private Set<String> imports = new HashSet<>();
+    private final Set<String> imports = new HashSet<>();
     protected String className = null;
     private String extend = null;
     protected List<String> implementList;
+    private boolean enableSerializedId;
 
     public ClassBlock(String name) {
         this.className = name;
         this.implementList = Collections.EMPTY_LIST;
+        this.enableSerializedId = false;
     }
 
-    public String getClassName()
-    {
+    public String getClassName() {
         return this.className;
     }
-    
+
+    public ClassBlock enableSerializedId(boolean enable) {
+        this.enableSerializedId = enable;
+        return this;
+    }
+
     public ClassBlock extend(String className) {
         this.extend = className;
         return this;
     }
 
-     public ClassBlock withPackageName(String packageName) {
+    public ClassBlock withPackageName(String packageName) {
         this.packageName = packageName;
         return this;
     }
@@ -53,12 +59,11 @@ public class ClassBlock extends PermissionBlock {
         return imports;
     }
 
-    
     public ClassBlock withImports(String... imports) {
-        Arrays.asList(imports).stream().filter(p->!p.substring(0,p.lastIndexOf(".")).equals("java.lang")).forEach(imp -> this.imports.add(imp));
+        Arrays.asList(imports).stream().filter(p -> !p.substring(0, p.lastIndexOf(".")).equals("java.lang")).forEach(imp -> this.imports.add(imp));
         return this;
     }
-    
+
     public ClassBlock implement(String... clsList) {
         implementList = Arrays.asList(clsList);
         return this;
@@ -76,8 +81,7 @@ public class ClassBlock extends PermissionBlock {
         return pushBlock(new FunctionBlock(functionName));
     }
 
-    public  void emptyBlock()
-    {
+    public void emptyBlock() {
         pushBlock(new CodeBlock() {
             @Override
             protected Statement generateHeader() {
@@ -85,7 +89,7 @@ public class ClassBlock extends PermissionBlock {
             }
         });
     }
-    
+
     public FunctionBlock createGetter(Var var) {
         FunctionBlock func = new FunctionBlock("get" + (("" + var.var.charAt(0)).toUpperCase() + var.var.substring(1)));
         func.stmt().append("return").append2("this.").append(var.var).end();
@@ -100,12 +104,23 @@ public class ClassBlock extends PermissionBlock {
         pushBlock(func.withAccess(AccessLevel.PUBLIC));
     }
 
+    @Override
     protected Statement generateHeader() {
         return stmt().append(level)
                 .append(isStatic, "static")
                 .append(isFinal, "final")
                 .append("class").append(className)
                 .append(extend != null, "extends " + extend)
-                .append(!implementList.isEmpty(),"implements "+String.join(",", implementList));
+                .append(!implementList.isEmpty(), "implements " + String.join(",", implementList));
+    }
+
+    @Override
+    public void generateCode(int tabIndex, StringBuilder builder) {
+        if (enableSerializedId) {
+            StringBuilder output = new StringBuilder();
+            super.generateCode(0, output);
+            var("long", "serialVersionUID").withAccess(AccessLevel.PUBLIC).withFinal().withStatic().assign("" + LongHashFunction.xx().hashChars(output.toString())+"L").end();
+        }
+        super.generateCode(tabIndex, builder);
     }
 }
