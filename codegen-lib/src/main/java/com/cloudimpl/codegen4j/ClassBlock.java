@@ -73,6 +73,10 @@ public class ClassBlock extends PermissionBlock {
         return pushBlock(new ClassBlock(name));
     }
 
+    public StaticBlock createStaticBlock(){
+        return pushBlock(new StaticBlock());
+    }
+    
     public ConstructorBlock createConstructor(String... args) {
         return pushBlock(new ConstructorBlock(className, args));
     }
