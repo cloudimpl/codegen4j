@@ -244,6 +244,12 @@ public abstract class MavenCodeGenSpi {
         {
             return baseDir+"/src/main/java";
         }
+        
+        public String getResourcesDir()
+        {
+            return baseDir+"/src/main/resources";
+        }
+        
         @Override
         public String toString() {
             return "Project{" + "baseDir=" + baseDir + ", buildDir=" + buildDir + ", buildTargetDir=" + buildTargetDir + '}';
