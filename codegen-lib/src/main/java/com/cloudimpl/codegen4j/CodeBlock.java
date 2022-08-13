@@ -43,9 +43,11 @@ public abstract class CodeBlock {
         return (T)this;
     }
 
-    protected Collection<String> getImports()
+    protected Collection<String> collectImports(Set<String> imports)
     {
-        return imports;
+       imports.addAll(this.imports);
+       codeBlocks.forEach(codeBlock -> codeBlock.collectImports(imports));
+       return imports;
     }
 
     private boolean hasEnumConstant() {

@@ -60,7 +60,7 @@ public class ClassBlock extends PermissionBlock {
 
     public Collection<String> getImports() {
         Set<String> imports = new HashSet<>(this.getImports());
-        imports.addAll(codeBlocks.stream().flatMap(codeBlock -> codeBlock.getImports().stream()).collect(Collectors.toSet()));
+        imports.addAll(codeBlocks.stream().flatMap(codeBlock -> codeBlock.collectImports(imports).stream()).collect(Collectors.toSet()));
         return imports;
     }
 
