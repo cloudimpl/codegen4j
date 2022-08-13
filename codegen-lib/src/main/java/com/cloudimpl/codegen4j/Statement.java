@@ -5,8 +5,11 @@
  */
 package com.cloudimpl.codegen4j;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -17,7 +20,7 @@ public class Statement {
         StringBuilder builder = new StringBuilder();
         CodeBlock block;
         protected boolean push = false;
-        private final List<String> annotations = new LinkedList<>();
+        private final Set<String> annotations = new HashSet<>();
         
         public Statement(CodeBlock block) {
             this.block = block;
@@ -36,7 +39,7 @@ public class Statement {
             return this;
         }
         
-        public List<String> getAnnotations()
+        public Collection<String> getAnnotations()
         {
             return annotations;
         }

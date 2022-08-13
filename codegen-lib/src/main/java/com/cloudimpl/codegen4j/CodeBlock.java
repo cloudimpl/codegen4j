@@ -6,8 +6,14 @@
 package com.cloudimpl.codegen4j;
 
 import static com.cloudimpl.codegen4j.ClassBuilder.tab;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -16,8 +22,9 @@ import java.util.List;
 public abstract class CodeBlock {
 
     private List<Statement> stmts = new LinkedList<>();
-    private List<CodeBlock> codeBlocks = new LinkedList<>();
+    protected List<CodeBlock> codeBlocks = new LinkedList<>();
     private List<String> annotations = new LinkedList<>();
+    private final Set<String> imports = new HashSet<>();
     private boolean disableBlockSpace = false;
 
     public CodeBlock() {
@@ -29,6 +36,18 @@ public abstract class CodeBlock {
 
     protected void addStmt(Statement stmt) {
         stmts.add(stmt);
+    }
+
+    public <T extends CodeBlock> T withImports(String... imports) {
+        Arrays.asList(imports).stream().filter(p -> !p.substring(0, p.lastIndexOf(".")).equals("java.lang")).forEach(imp -> this.imports.add(imp));
+        return (T)this;
+    }
+
+    protected Collection<String> collectImports(Set<String> imports)
+    {
+       imports.addAll(this.imports);
+       codeBlocks.forEach(codeBlock -> codeBlock.collectImports(imports));
+       return imports;
     }
 
     private boolean hasEnumConstant() {

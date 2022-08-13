@@ -9,8 +9,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import net.openhft.hashing.LongHashFunction;
 
 /**
@@ -20,7 +23,7 @@ import net.openhft.hashing.LongHashFunction;
 public class ClassBlock extends PermissionBlock {
 
     private String packageName;
-    private final Set<String> imports = new HashSet<>();
+
     protected String className = null;
     private String extend = null;
     protected List<String> implementList;
@@ -28,7 +31,7 @@ public class ClassBlock extends PermissionBlock {
 
     public ClassBlock(String name) {
         this.className = name;
-        this.implementList = Collections.EMPTY_LIST;
+        this.implementList = new LinkedList<>();
         this.enableSerializedId = false;
     }
 
@@ -46,9 +49,9 @@ public class ClassBlock extends PermissionBlock {
         return this;
     }
 
-    public ClassBlock withPackageName(String packageName) {
+    public <T extends ClassBlock> T withPackageName(String packageName) {
         this.packageName = packageName;
-        return this;
+        return (T)this;
     }
 
     public String getPackageName() {
@@ -56,16 +59,12 @@ public class ClassBlock extends PermissionBlock {
     }
 
     public Collection<String> getImports() {
-        return imports;
-    }
-
-    public ClassBlock withImports(String... imports) {
-        Arrays.asList(imports).stream().filter(p -> !p.substring(0, p.lastIndexOf(".")).equals("java.lang")).forEach(imp -> this.imports.add(imp));
-        return this;
+        Set<String> imports = new HashSet<>();
+        return collectImports(imports);
     }
 
     public ClassBlock implement(String... clsList) {
-        implementList = Arrays.asList(clsList);
+        implementList.addAll(Arrays.asList(clsList));
         return this;
     }
 
