@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import net.openhft.hashing.LongHashFunction;
 
 /**
@@ -21,7 +23,7 @@ import net.openhft.hashing.LongHashFunction;
 public class ClassBlock extends PermissionBlock {
 
     private String packageName;
-    private final Set<String> imports = new HashSet<>();
+
     protected String className = null;
     private String extend = null;
     protected List<String> implementList;
@@ -57,12 +59,9 @@ public class ClassBlock extends PermissionBlock {
     }
 
     public Collection<String> getImports() {
+        Set<String> imports = new HashSet<>(this.getImports());
+        imports.addAll(codeBlocks.stream().flatMap(codeBlock -> codeBlock.getImports().stream()).collect(Collectors.toSet()));
         return imports;
-    }
-
-    public ClassBlock withImports(String... imports) {
-        Arrays.asList(imports).stream().filter(p -> !p.substring(0, p.lastIndexOf(".")).equals("java.lang")).forEach(imp -> this.imports.add(imp));
-        return this;
     }
 
     public ClassBlock implement(String... clsList) {
