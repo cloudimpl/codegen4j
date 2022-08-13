@@ -59,9 +59,8 @@ public class ClassBlock extends PermissionBlock {
     }
 
     public Collection<String> getImports() {
-        Set<String> imports = new HashSet<>(this.getImports());
-        imports.addAll(codeBlocks.stream().flatMap(codeBlock -> codeBlock.collectImports(imports).stream()).collect(Collectors.toSet()));
-        return imports;
+        Set<String> imports = new HashSet<>();
+        return collectImports(imports);
     }
 
     public ClassBlock implement(String... clsList) {
