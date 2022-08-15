@@ -5,6 +5,8 @@
  */
 package com.cloudimpl.codegen4j;
 
+import javax.security.auth.login.AccountNotFoundException;
+
 import static com.cloudimpl.codegen4j.ClassBuilder.tab;
 
 import java.util.Arrays;
@@ -106,7 +108,7 @@ public abstract class CodeBlock {
 
     protected abstract Statement generateHeader();
 
-    protected void generateCode(int tabIndex, StringBuilder builder) {
+    protected StringBuilder generateCode(int tabIndex, StringBuilder builder) {
         int beginTab = tabIndex;
         Statement header = generateHeader();
         if (header != null) {
@@ -114,10 +116,17 @@ public abstract class CodeBlock {
                 tab(builder, beginTab);
                 builder.append(s).append("\r\n");
             });
-            tab(builder, beginTab);
+            if(!(this instanceof AnnoymousFunctionBlock))
+            {
+                tab(builder, beginTab);
+            }
             builder.append(header.toString());
         } else {
-            tab(builder, beginTab);
+            if(!(this instanceof AnnoymousFunctionBlock))
+            {
+                tab(builder, beginTab);
+            }
+
         }
         builder.append("{").append("\r\n");
 
@@ -140,7 +149,21 @@ public abstract class CodeBlock {
                 builder.append(s).append("\r\n");
             });
             tab(builder, temp);
-            builder.append(stmt.toString()).append("\r\n");
+            if(stmt instanceof Var)
+            {
+                Var var = Var.class.cast(stmt);
+                if(var.getVal() != null && var.getVal().getClass() == AnnoymousFunctionBlock.class)
+                {
+                    StringBuilder x = new StringBuilder();
+                    builder.append(stmt.toString().concat("= ").concat(AnnoymousFunctionBlock.class.cast(var.getVal()).generateCode(temp,x).toString()));
+                }
+                else {
+                    builder.append(stmt.toString().concat("= ").concat(var.getVal().toString()).concat(";")).append("\r\n");
+                }
+
+            }else {
+                builder.append(stmt.toString()).append("\r\n");
+            }
         });
         //builder.append("\r\n");
         codeBlocks.sort((CodeBlock arg0, CodeBlock arg1) -> {
@@ -168,6 +191,7 @@ public abstract class CodeBlock {
             builder.append(returnStmt.toString()).append("\r\n");
         }
         tab(builder, beginTab);
-        builder.append("}").append("\r\n");
+        builder.append("}").append((this instanceof AnnoymousFunctionBlock)? ";":"").append("\r\n");
+        return builder;
     }
 }

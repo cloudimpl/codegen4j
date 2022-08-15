@@ -14,7 +14,7 @@ public class Var extends Statement {
         protected AccessLevel level = AccessLevel.DEFAULT;
         protected String type;
         protected String var;
-        protected String val;
+        protected Object val;
         protected boolean isFinal = false;
         protected boolean isStatc = false;
         
@@ -53,7 +53,17 @@ public class Var extends Statement {
             this.val = obj.toString();
             return this;
         }
-        
+
+        public Var assignFunction(AnnoymousFunctionBlock functionBlock)
+        {
+            this.val = functionBlock;
+            return this;
+        }
+
+        public Object getVal()
+        {
+            return this.val;
+        }
         public <T> T end() {
             if (!push) {
                 append(level);
@@ -62,11 +72,6 @@ public class Var extends Statement {
 
                 append(type);
                 append(var);
-                if (val != null) {
-                    append("=");
-                    append2(val);
-                }
-                builder.append(";");
                 this.block.addStmt(this);
                 push = true;
             }
