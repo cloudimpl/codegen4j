@@ -18,11 +18,18 @@ public  final class FunctionBlock extends PermissionBlock {
         protected String functionName;
         protected String returnType = "void";
         private List<String> args;
+        private ClassBlock classBlock;
 
-        public FunctionBlock(String functionName) {
+        public FunctionBlock(String functionName,ClassBlock classBlock) {
             this.functionName = functionName;
             this.returnType = returnType;
             this.args = Collections.EMPTY_LIST;
+            this.classBlock = classBlock;
+        }
+
+        public ClassBlock getClassBlock()
+        {
+            return this.classBlock;
         }
 
         public FunctionBlock withArgs(String... args) {

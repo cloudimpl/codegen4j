@@ -81,7 +81,7 @@ public class ClassBlock extends PermissionBlock {
     }
 
     public FunctionBlock createFunction(String functionName) {
-        return pushBlock(new FunctionBlock(functionName));
+        return pushBlock(new FunctionBlock(functionName,this));
     }
 
     public void emptyBlock() {
@@ -94,14 +94,14 @@ public class ClassBlock extends PermissionBlock {
     }
 
     public FunctionBlock createGetter(Var var) {
-        FunctionBlock func = new FunctionBlock("get" + (("" + var.var.charAt(0)).toUpperCase() + var.var.substring(1)));
+        FunctionBlock func = new FunctionBlock("get" + (("" + var.var.charAt(0)).toUpperCase() + var.var.substring(1)),this);
         func.stmt().append("return").append2("this.").append(var.var).end();
         pushBlock(func.withReturnType(var.type).withAccess(AccessLevel.PUBLIC));
         return func;
     }
 
     public void createSetter(Var var) {
-        FunctionBlock func = new FunctionBlock("set" + (("" + var.var.charAt(0)).toUpperCase() + var.var.substring(1)))
+        FunctionBlock func = new FunctionBlock("set" + (("" + var.var.charAt(0)).toUpperCase() + var.var.substring(1)),this)
                 .withArgs(var.type + " " + var.var);
         func.stmt().append2("this.").append(var.var).append("=").append(var.var).end();
         pushBlock(func.withAccess(AccessLevel.PUBLIC));
@@ -118,12 +118,12 @@ public class ClassBlock extends PermissionBlock {
     }
 
     @Override
-    public void generateCode(int tabIndex, StringBuilder builder) {
+    public StringBuilder generateCode(int tabIndex, StringBuilder builder) {
         if (enableSerializedId) {
             StringBuilder output = new StringBuilder();
             super.generateCode(0, output);
             var("long", "serialVersionUID").withAccess(AccessLevel.PUBLIC).withFinal().withStatic().assign("" + LongHashFunction.xx().hashChars(output.toString())+"L").end();
         }
-        super.generateCode(tabIndex, builder);
+        return super.generateCode(tabIndex, builder);
     }
 }
