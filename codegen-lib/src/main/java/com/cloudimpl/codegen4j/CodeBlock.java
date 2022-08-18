@@ -157,8 +157,12 @@ public abstract class CodeBlock {
                     StringBuilder x = new StringBuilder();
                     builder.append(stmt.toString().concat("= ").concat(AnnoymousFunctionBlock.class.cast(var.getVal()).generateCode(temp,x).toString()));
                 }
-                else {
+                else if(var.getVal() != null)
+                {
                     builder.append(stmt.toString().concat("= ").concat(var.getVal().toString()).concat(";")).append("\r\n");
+                }
+                else {
+                    builder.append(stmt.toString().concat(";")).append("\r\n");
                 }
 
             }else {
