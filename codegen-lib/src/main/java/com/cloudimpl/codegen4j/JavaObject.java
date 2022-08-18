@@ -44,7 +44,17 @@ public class JavaObject{
         this.args = parseArgs(args);
         return this;
     }
-    
+
+    public JavaObject withArgs2(Object... args)
+    {
+        this.args = parseArgs2(args);
+        return this;
+    }
+
+    public static List<String> parseArgs2(Object... args)
+    {
+        return Arrays.asList(args).stream().map(arg->""+arg).collect(Collectors.toList());
+    }
     @Override
     public String toString()
     {
